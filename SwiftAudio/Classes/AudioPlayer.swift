@@ -264,6 +264,10 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
         updateNowPlayingRate(rate)
     }
     
+    public func updateRemoteCommands() {
+        enableRemoteCommands(remoteCommands)
+    }
+    
     private func updateNowPlayingDuration(_ duration: Double) {
         nowPlayingInfoController.set(keyValue: MediaItemProperty.duration(duration))
     }
