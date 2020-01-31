@@ -11,7 +11,7 @@ import MediaPlayer
 public typealias AudioPlayerState = AVPlayerWrapperState
 
 public class AudioPlayer: AVPlayerWrapperDelegate {
-
+    
     private var _wrapper: AVPlayerWrapperProtocol
     
     /// The wrapper around the underlying AVPlayer
@@ -162,30 +162,17 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
         wrapper.load(from: url,
                      playWhenReady: playWhenReady,
                      initialTime: (item as? InitialTiming)?.getInitialTime(),
-                     options:(item as? AssetOptionsProviding)?.getAssetOptions())
+                     headers: (item as? Authorizing)?.getHeaders())
         
         self._currentItem = item
         
         if (automaticallyUpdateNowPlayingInfo) {
             self.loadNowPlayingMetaValues()
         }
-        enableRemoteCommands(forItem: item)
-    }
-    
-    public func preload(urlString: String) {
-        self.wrapper.preload(urlString: urlString);
-    }
-    
-    public func cancelPreload(urlString: String) {
-        self.wrapper.cancelPreload(urlString: urlString);
-    }
-    
-    public func pauseOnTime(time: Double) {
-        self.wrapper.pauseOnTime(time: time);
-    }
-    
-    public func clearPauseOnTime() {
-        self.wrapper.clearPauseOnTime();
+        
+        if (item is RemoteCommandable) {
+            enableRemoteCommands(forItem: item)
+        }
     }
     
     /**
@@ -279,11 +266,7 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
         updateNowPlayingCurrentTime(currentTime)
         updateNowPlayingRate(rate)
     }
-
-     public func updateRemoteCommands() {
-        enableRemoteCommands(remoteCommands)
-    }
-
+    
     private func updateNowPlayingDuration(_ duration: Double) {
         nowPlayingInfoController.set(keyValue: MediaItemProperty.duration(duration))
     }
@@ -326,14 +309,16 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
     
     func AVWrapper(didChangeState state: AVPlayerWrapperState) {
         switch state {
-        case .ready, .loading:
+        case .ready:
             if (automaticallyUpdateNowPlayingInfo) {
                 updateNowPlayingPlaybackValues()
             }
+            
             setTimePitchingAlgorithmForCurrentItem()
         case .playing, .paused:
             if (automaticallyUpdateNowPlayingInfo) {
-                updateNowPlayingPlaybackValues()
+                updateNowPlayingCurrentTime(currentTime)
+                updateNowPlayingRate(rate)
             }
         default: break
         }
@@ -366,5 +351,5 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
     func AVWrapperDidRecreateAVPlayer() {
         self.event.didRecreateAVPlayer.emit(data: ())
     }
-
+    
 }

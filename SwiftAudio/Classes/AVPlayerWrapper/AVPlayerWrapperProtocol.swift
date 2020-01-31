@@ -53,4 +53,12 @@ protocol AVPlayerWrapperProtocol: class {
     
     func load(from url: URL, playWhenReady: Bool, initialTime: TimeInterval?, options: [String: Any]?)
     
+    func preload(urlString: String)
+    
+    func cancelPreload(urlString: String)
+    
+    func pauseOnTime(time: TimeInterval)
+    
+    func clearPauseOnTime()
+    
 }
