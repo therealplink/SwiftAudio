@@ -358,6 +358,7 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
     // MARK: - Util
     
     private func reset(soft: Bool) {
+        playerObserver.stopObserving()
         playerItemObserver.stopObservingCurrentItem()
         playerTimeObserver.unregisterForBoundaryTimeEvents()
         playerItemNotificationObserver.stopObservingCurrentItem()
